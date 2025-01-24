@@ -13,6 +13,8 @@
   <body>
 
   <h1>Registro de Usuarios:</h1>
+
+  <form method="get">
   <div class="input-group mb-3">
   <span class="input-group-text" id="basic-addon1">@</span>
   <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
@@ -41,6 +43,8 @@
 </div>
 
 <button type="button" class="btn btn-success">Enviar</button>
+</form>
+
 
     <!-- Option 1: Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
