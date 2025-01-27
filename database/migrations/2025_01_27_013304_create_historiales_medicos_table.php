@@ -11,14 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('citas_medicas', function (Blueprint $table) {
+        Schema::create('historiales_medicos', function (Blueprint $table) {
             $table->id();
-            $table->date('fecha');
-            $table->date('hora');
-            $table->foreignId('paciente_id')->constrained('pacientes')->onDelete('cascade');
-            $table->foreignId('doctor_id')->constrained('doctores')->onDelete('cascade');
+            $table->foreignId('paciente_id')->constrained('pacientes')->onDelete('cascade'); // Relación con Paciente
+            $table->text('descripcion'); // Descripción del historial
+            $table->date('fecha'); // Fecha del historial médico
             $table->timestamps();
-
         });
     }
 
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('citas_medicas');
+        Schema::dropIfExists('historiales_medicos');
     }
 };

@@ -1,11 +1,11 @@
 @extends('layouts.master')
 
-@section('title', 'Crear Administrador')
+@section('title', 'Crear Doctor')
 
 @section('content')
 <div class="container mt-4">
-    <h1>Crear Administrador</h1>
-    <form action="{{ route('administradores.store') }}" method="POST">
+    <h1>Crear Doctor</h1>
+    <form action="{{ route('doctores.store') }}" method="POST">
         @csrf
         <div class="mb-3">
             <label for="usuario_id" class="form-label">Usuario</label>
@@ -17,8 +17,8 @@
             </select>
         </div>
         <div class="mb-3">
-            <label for="cargo" class="form-label">Cargo</label>
-            <input type="text" name="cargo" id="cargo" class="form-control" required>
+            <label for="especialidad" class="form-label">Especialidad</label>
+            <input type="text" name="especialidad" id="especialidad" class="form-control" required>
         </div>
         <div class="mb-3">
             <label for="departamento" class="form-label">Departamento</label>

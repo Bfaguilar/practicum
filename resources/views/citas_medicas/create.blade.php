@@ -1,37 +1,47 @@
 @extends('layouts.master')
 
+@section('title', 'Agendar Cita Médica')
+
 @section('content')
-<div class="container mt-5">
-        <h1>Agendar Cita Médica</h1>
-
-        <form action="{{ route('citas_medicas.store') }}" method="POST">
+<div class="container mt-4">
+    <h1>Agendar Cita Médica</h1>
+    <form action="{{ route('citas_medicas.store') }}" method="POST">
         @csrf
-            <div class="form-group">
-                <label for="paciente_id">Paciente:</label>
-                <select name="paciente_id" id="paciente_id" class="form-control">
-                    <option value="">Seleccione un paciente</option>
-                    @foreach ($pacientes as $paciente)
-                        <option value="{{ $paciente->id }}">{{ $paciente->nombre }} {{ $paciente->apellido }}</option>
-                    @endforeach
-                </select>
-            </div>
+        <div class="mb-3">
+            <label for="paciente_id" class="form-label">Paciente</label>
+            <select name="paciente_id" id="paciente_id" class="form-control" required>
+                <option value="" disabled selected>Selecciona un paciente</option>
+                @foreach ($pacientes as $paciente)
+                    <option value="{{ $paciente->id }}">
+                        {{ $paciente->usuario->nombre }} {{ $paciente->usuario->apellido }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
 
-            <div class="form-group">
-                <label for="doctor_id">Doctor:</label>
-                <select name="doctor_id" id="doctor_id" class="form-control">
-                    <option value="">Seleccione un Doctor</option>
-                    @foreach ($doctors as $doctor)
-                        <option value="{{ $doctor->id }}">{{ $doctor->nombre }} {{ $doctor->apellido }}</option>
-                    @endforeach
-                </select>
-            </div>
+        <div class="mb-3">
+            <label for="doctor_id" class="form-label">Doctor</label>
+            <select name="doctor_id" id="doctor_id" class="form-control" required>
+                <option value="" disabled selected>Selecciona un doctor</option>
+                @foreach ($doctores as $doctor)
+                    <option value="{{ $doctor->id }}">
+                        {{ $doctor->usuario->nombre }} {{ $doctor->usuario->apellido }} ({{ $doctor->especialidad }})
+                    </option>
+                @endforeach
+            </select>
+        </div>
 
-            <div class="form-group">
-                <label for="fecha">Fecha de la cita:</label>
-                <input type="datetime-local" name="fecha" id="fecha" class="form-control">
-            </div>
+        <div class="mb-3">
+            <label for="fecha" class="form-label">Fecha</label>
+            <input type="date" name="fecha" id="fecha" class="form-control" required>
+        </div>
 
-            <button type="submit" class="btn btn-primary mt-3">Agendar</button>
-        </form>
-    </div>
+        <div class="mb-3">
+            <label for="hora" class="form-label">Hora</label>
+            <input type="time" name="hora" id="hora" class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn btn-success">Agendar</button>
+    </form>
+</div>
 @endsection

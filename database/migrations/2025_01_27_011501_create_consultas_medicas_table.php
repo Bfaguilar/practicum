@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('medicinas', function (Blueprint $table) {
+        Schema::create('consultas_medicas', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('cita_medica_id')->constrained('citas_medicas')->onDelete('cascade'); // Relación con Cita Médica
+            $table->foreignId('medicina_id')->constrained('medicinas')->onDelete('cascade');       // Relación con Medicina
+            $table->text('diagnostico');
             $table->timestamps();
         });
     }
@@ -22,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('medicinas');
+        Schema::dropIfExists('consultas_medicas');
     }
 };

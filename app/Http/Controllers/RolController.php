@@ -12,12 +12,8 @@ class RolController extends Controller
      */
     public function index()
     {
-        $roles = [
-            ['nombre' => 'Administrador', 'descripcion' => 'Acceso completo al sistema', 'color' => 'bg-primary'],
-            ['nombre' => 'Médico', 'descripcion' => 'Gestionar citas y pacientes', 'color' => 'bg-success'],
-            ['nombre' => 'Paciente', 'descripcion' => 'Ver y gestionar citas médicas', 'color' => 'bg-warning'],
-        ];
-        return view('roles.index',compact('roles'));
+        $roles = Rol::all();
+        return view('roles.index', compact('roles'));
     }
 
     /**
@@ -25,7 +21,7 @@ class RolController extends Controller
      */
     public function create()
     {
-        return view('roles.index');
+        return view('roles.create');
     }
 
     /**
@@ -33,7 +29,14 @@ class RolController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'nombre' => 'required|string|max:255|unique:roles,nombre',
+            'descripcion' => 'nullable|string|max:255',
+        ]);
+
+        Rol::create($request->all());
+
+        return redirect()->route('roles.index')->with('success', 'Rol creado con éxito.');
     }
 
     /**
@@ -41,7 +44,8 @@ class RolController extends Controller
      */
     public function show(Rol $rol)
     {
-        return view('roles.show', ['id' => $rol]);
+        $usuarios = $rol->usuarios; // Obtener los usuarios asociados al rol
+        return view('roles.show', compact('rol', 'usuarios'));
     }
 
     /**
@@ -49,7 +53,7 @@ class RolController extends Controller
      */
     public function edit(Rol $rol)
     {
-        return view('roles.edit', ['id' => $rol]);
+        return view('roles.edit', compact('rol'));
     }
 
     /**
@@ -57,7 +61,14 @@ class RolController extends Controller
      */
     public function update(Request $request, Rol $rol)
     {
-        //
+        $request->validate([
+            'nombre' => 'required|string|max:255|unique:roles,nombre,' . $rol->id,
+            'descripcion' => 'nullable|string|max:255',
+        ]);
+
+        $rol->update($request->all());
+
+        return redirect()->route('roles.index')->with('success', 'Rol actualizado con éxito.');
     }
 
     /**
@@ -65,6 +76,8 @@ class RolController extends Controller
      */
     public function destroy(Rol $rol)
     {
-        //
+        $rol->delete();
+
+        return redirect()->route('roles.index')->with('success', 'Rol eliminado con éxito.');
     }
 }

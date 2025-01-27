@@ -3,84 +3,95 @@
 namespace App\Http\Controllers;
 
 use App\Models\Receta;
+use App\Models\Paciente;
+use App\Models\Doctor;
+use App\Models\Medicina;
 use Illuminate\Http\Request;
 
 class RecetaController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Muestra una lista de recetas.
      */
     public function index()
     {
-        $recetas = [
-            [
-                'id' => 1,
-                'id_paciente' => 101,
-                'id_doctor' => 201,
-                'dosis' => '5mg cada 8 horas',
-            ],
-            [
-                'id' => 2,
-                'id_paciente' => 102,
-                'id_doctor' => 202,
-                'dosis' => '10mg antes de dormir',
-            ],
-            [
-                'id' => 3,
-                'id_paciente' => 103,
-                'id_doctor' => 203,
-                'dosis' => '2mg cada 6 horas',
-            ]
-        ];
-
+        $recetas = Receta::with('paciente.usuario', 'doctor.usuario', 'medicina')->get();
         return view('recetas.index', compact('recetas'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Muestra el formulario para crear una nueva receta.
      */
     public function create()
     {
-        return view('recetas.create');
+        $pacientes = Paciente::with('usuario')->get();
+        $doctores = Doctor::with('usuario')->get();
+        $medicinas = Medicina::all();
+
+        return view('recetas.create', compact('pacientes', 'doctores', 'medicinas'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Almacena una nueva receta en la base de datos.
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'paciente_id' => 'required|exists:pacientes,id',
+            'doctor_id' => 'required|exists:doctores,id',
+            'medicina_id' => 'required|exists:medicinas,id',
+            'dosis' => 'required|string|max:255',
+        ]);
+
+        Receta::create($request->all());
+
+        return redirect()->route('recetas.index')->with('success', 'Receta creada exitosamente.');
     }
 
     /**
-     * Display the specified resource.
+     * Muestra los detalles de una receta.
      */
     public function show(Receta $receta)
     {
-        return view('recetas.show', ['id' => $receta]);
+        return view('recetas.show', compact('receta'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Muestra el formulario para editar una receta.
      */
     public function edit(Receta $receta)
     {
-        return view('recetas.edit', ['id' => $receta]);
+        $pacientes = Paciente::with('usuario')->get();
+        $doctores = Doctor::with('usuario')->get();
+        $medicinas = Medicina::all();
+
+        return view('recetas.edit', compact('receta', 'pacientes', 'doctores', 'medicinas'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualiza una receta en la base de datos.
      */
     public function update(Request $request, Receta $receta)
     {
-        //
+        $request->validate([
+            'paciente_id' => 'required|exists:pacientes,id',
+            'doctor_id' => 'required|exists:doctores,id',
+            'medicina_id' => 'required|exists:medicinas,id',
+            'dosis' => 'required|string|max:255',
+        ]);
+
+        $receta->update($request->all());
+
+        return redirect()->route('recetas.index')->with('success', 'Receta actualizada exitosamente.');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina una receta de la base de datos.
      */
     public function destroy(Receta $receta)
     {
-        //
+        $receta->delete();
+
+        return redirect()->route('recetas.index')->with('success', 'Receta eliminada exitosamente.');
     }
 }

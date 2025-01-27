@@ -5,16 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Doctor extends Model
+class Paciente extends Model
 {
     use HasFactory;
-
-    protected $table = 'doctores';
-    protected $fillable =[
-        
+    
+    protected $fillable = [
         'usuario_id',
-        'especialidad',
-        'departamento',
+        'fecha_nacimiento', 
+        'direccion', 
+        'telefono'
     ];
 
     // Relación inversa con Usuario
@@ -23,15 +22,20 @@ class Doctor extends Model
         return $this->belongsTo(Usuario::class);
     }
 
+    // Relación con Historiales Médicos
+    public function historialesMedicos()
+    {
+        return $this->hasMany(HistorialMedico::class);
+    }
+
     // Relación con Recetas
     public function recetas()
     {
         return $this->hasMany(Receta::class);
-    }
+    } 
 
     public function citasMedicas()
 {
     return $this->hasMany(CitaMedica::class);
 }
-
 }

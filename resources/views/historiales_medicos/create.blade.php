@@ -1,18 +1,20 @@
 @extends('layouts.master')
 
-@section('title', 'Crear Informe')
+@section('title', 'Crear Historial Médico')
 
 @section('content')
 <div class="container mt-4">
-    <h1>Crear Informe</h1>
-    <form action="{{ route('informes.store') }}" method="POST">
+    <h1>Crear Historial Médico</h1>
+    <form action="{{ route('historiales_medicos.store') }}" method="POST">
         @csrf
         <div class="mb-3">
-            <label for="cita_medica_id" class="form-label">Cita Médica</label>
-            <select name="cita_medica_id" id="cita_medica_id" class="form-control" required>
-                <option value="" disabled selected>Selecciona una cita médica</option>
-                @foreach ($citas_medicas as $cita)
-                    <option value="{{ $cita->id }}">Cita #{{ $cita->id }} - Fecha: {{ $cita->fecha }}</option>
+            <label for="paciente_id" class="form-label">Paciente</label>
+            <select name="paciente_id" id="paciente_id" class="form-control" required>
+                <option value="" disabled selected>Selecciona un paciente</option>
+                @foreach ($pacientes as $paciente)
+                    <option value="{{ $paciente->id }}">
+                        {{ $paciente->usuario->nombre }} {{ $paciente->usuario->apellido }}
+                    </option>
                 @endforeach
             </select>
         </div>

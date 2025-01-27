@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('historial_medicos', function (Blueprint $table) {
+        Schema::create('informes', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('cita_medica_id')->constrained('citas_medicas')->onDelete('cascade'); // Relación con Cita Médica
+            $table->text('descripcion'); // Descripción del informe
+            $table->date('fecha'); // Fecha del informe
             $table->timestamps();
         });
     }
@@ -22,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('historial_medicos');
+        Schema::dropIfExists('informes');
     }
 };

@@ -3,78 +3,85 @@
 namespace App\Http\Controllers;
 
 use App\Models\Informe;
+use App\Models\CitaMedica;
 use Illuminate\Http\Request;
 
 class InformeController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Muestra una lista de informes.
      */
     public function index()
     {
-        $informes = [
-            [
-                'id' => 1,
-                'id_CitaMedica' => 101,
-            ],
-            [
-                'id' => 2,
-                'id_CitaMedica' => 102,
-            ],
-            [
-                'id' => 3,
-                'id_CitaMedica' => 103,
-            ]
-        ];
-
+        $informes = Informe::with('citaMedica')->get();
         return view('informes.index', compact('informes'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Muestra el formulario para crear un nuevo informe.
      */
     public function create()
     {
-        return view('informes.create');
+        $citas_medicas = CitaMedica::all();
+        return view('informes.create', compact('citas_medicas'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Almacena un nuevo informe en la base de datos.
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'cita_medica_id' => 'required|exists:citas_medicas,id',
+            'descripcion' => 'required|string|max:1000',
+            'fecha' => 'required|date',
+        ]);
+
+        Informe::create($request->all());
+
+        return redirect()->route('informes.index')->with('success', 'Informe creado exitosamente.');
     }
 
     /**
-     * Display the specified resource.
+     * Muestra los detalles de un informe.
      */
     public function show(Informe $informe)
     {
-        return view('nombre_vista.show', ['id' => $informe]);
+        return view('informes.show', compact('informe'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Muestra el formulario para editar un informe.
      */
     public function edit(Informe $informe)
     {
-        return view('informes.edit', ['id' => $informe]);
+        $citas_medicas = CitaMedica::all();
+        return view('informes.edit', compact('informe', 'citas_medicas'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualiza un informe en la base de datos.
      */
     public function update(Request $request, Informe $informe)
     {
-        //
+        $request->validate([
+            'cita_medica_id' => 'required|exists:citas_medicas,id',
+            'descripcion' => 'required|string|max:1000',
+            'fecha' => 'required|date',
+        ]);
+
+        $informe->update($request->all());
+
+        return redirect()->route('informes.index')->with('success', 'Informe actualizado exitosamente.');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina un informe de la base de datos.
      */
     public function destroy(Informe $informe)
     {
-        //
+        $informe->delete();
+
+        return redirect()->route('informes.index')->with('success', 'Informe eliminado exitosamente.');
     }
 }

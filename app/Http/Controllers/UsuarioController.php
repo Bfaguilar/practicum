@@ -12,40 +12,8 @@ class UsuarioController extends Controller
      */
     public function index()
     {
-        $usuarios = [
-            [
-                'id' => 1,
-                'nombre' => 'Juan',
-                'apellido' => 'Pérez',
-                'fecha_nacimiento' => '1990-01-01',
-                'direccion' => 'Calle Ficticia 123, Ciudad',
-                'tipo_usuario' => 'Administrador',
-                'telefono' => '555-1234',
-                'correo' => 'juan.perez@example.com',
-            ],
-            [
-                'id' => 2,
-                'nombre' => 'María',
-                'apellido' => 'López',
-                'fecha_nacimiento' => '1985-02-15',
-                'direccion' => 'Avenida Libertad 456, Ciudad',
-                'tipo_usuario' => 'Médico',
-                'telefono' => '555-5678',
-                'correo' => 'maria.lopez@example.com',
-            ],
-            [
-                'id' => 3,
-                'nombre' => 'Carlos',
-                'apellido' => 'Gómez',
-                'fecha_nacimiento' => '1992-03-30',
-                'direccion' => 'Calle Sol 789, Ciudad',
-                'tipo_usuario' => 'Paciente',
-                'telefono' => '555-9101',
-                'correo' => 'carlos.gomez@example.com',
-            ]
-        ];
-
-        return view('usuarios.index',compact('usuarios'));
+        $usuarios = Usuario::all();
+        return view('usuarios.index', compact('usuarios'));
     }
 
     /**
@@ -61,7 +29,18 @@ class UsuarioController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:255',
+            'apellido' => 'required|string|max:255',
+            'fecha_nacimiento' => 'required|date',
+            'direccion' => 'required|string|max:255',
+            'tipo_usuario' => 'required|string|max:255',
+            'telefono' => 'required|string|max:15',
+            'correo' => 'required|email|unique:usuarios',
+        ]);
+
+        Usuario::create($validated);
+        return redirect()->route('usuarios.index')->with('success', 'Usuario creado exitosamente');
     }
 
     /**
@@ -69,7 +48,7 @@ class UsuarioController extends Controller
      */
     public function show(Usuario $usuario)
     {
-        return view('usuarios.show', ['id' => $usuario]);
+        return view('usuarios.show', compact('usuario'));
     }
 
     /**
@@ -77,7 +56,7 @@ class UsuarioController extends Controller
      */
     public function edit(Usuario $usuario)
     {
-        return view('usuarios.edit', ['id' => $usuario]);
+        return view('usuarios.edit', compact('usuario')); 
     }
 
     /**
@@ -85,7 +64,20 @@ class UsuarioController extends Controller
      */
     public function update(Request $request, Usuario $usuario)
     {
-        //
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:255',
+            'apellido' => 'required|string|max:255',
+            'fecha_nacimiento' => 'required|date',
+            'direccion' => 'required|string|max:255',
+            'tipo_usuario' => 'required|string|max:255',
+            'telefono' => 'required|string|max:15',
+            'correo' => 'required|email|unique:usuarios' . $usuario->id,
+        ]);
+
+        $usuario->update($validated);
+        return redirect()->route('usuarios.index')->with('success', 'Usuario actualizado exitosamente');
+
+
     }
 
     /**
@@ -93,6 +85,7 @@ class UsuarioController extends Controller
      */
     public function destroy(Usuario $usuario)
     {
-        //
+        $usuario->delete();
+        return redirect()->route('usuarios.index')->with('success', 'Usuario eliminado exitosamente');
     }
 }

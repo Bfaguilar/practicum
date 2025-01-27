@@ -11,20 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('usuarios', function (Blueprint $table) {
+        Schema::create('pacientes', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre');
-            $table->string('apellido');
+            $table->foreignId('usuario_id')->constrained('usuarios')->onDelete('cascade'); // Relación con Usuario
             $table->date('fecha_nacimiento');
             $table->string('direccion');
-            $table->enum('tipo_usuario', ['admin', 'medico', 'paciente'])->default('paciente');
             $table->string('telefono');
-            $table->string('correo')->unique();
-            $table->foreignId('rol_id')->constrained('roles')->onDelete('cascade');
             $table->timestamps();
-
         });
-        
     }
 
     /**
@@ -32,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('usuarios');
+        Schema::dropIfExists('pacientes');
     }
 };

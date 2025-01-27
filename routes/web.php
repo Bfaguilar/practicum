@@ -10,7 +10,7 @@ use App\Http\Controllers\HistorialMedicoController;
 use App\Http\Controllers\RecetaController;
 use App\Http\Controllers\MedicinaController;
 use App\Http\Controllers\InformeController;
-
+use App\Http\Controllers\PacienteController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -47,11 +47,11 @@ Route::get('/', function () {
 Route::resource('roles', RolController::class);
 Route::resource('usuarios', UsuarioController::class);
 Route::resource('administradores', AdministradorController::class);
-Route::resource('doctors', DoctorController::class);
-Route::resource('patients', PatientController::class);
+Route::resource('doctores', DoctorController::class);
+Route::resource('pacientes', PacienteController::class);
 Route::resource('citas_medicas', CitaMedicaController::class);
 Route::resource('consultas_medicas', ConsultaMedicaController::class);
-Route::resource('historiales-medicos', HistorialMedicoController::class);
+Route::resource('historiales_medicos', HistorialMedicoController::class);
 Route::resource('recetas', RecetaController::class);
 Route::resource('medicinas', MedicinaController::class);
 Route::resource('informes', InformeController::class);

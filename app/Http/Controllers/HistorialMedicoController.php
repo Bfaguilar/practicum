@@ -3,78 +3,85 @@
 namespace App\Http\Controllers;
 
 use App\Models\HistorialMedico;
+use App\Models\Paciente;
 use Illuminate\Http\Request;
 
 class HistorialMedicoController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Muestra una lista de historiales médicos.
      */
     public function index()
     {
-        $historiales = [
-            [
-                'id' => 1,
-                'consulta_medica_id' => 101,
-            ],
-            [
-                'id' => 2,
-                'consulta_medica_id' => 102,
-            ],
-            [
-                'id' => 3,
-                'consulta_medica_id' => 103,
-            ]
-        ];
-
-        return view('historiales-medicos.index', compact('historiales')); 
+        $historiales = HistorialMedico::with('paciente.usuario')->get();
+        return view('historiales_medicos.index', compact('historiales'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Muestra el formulario para crear un nuevo historial médico.
      */
     public function create()
     {
-        return view('historiales-medicos.create');
+        $pacientes = Paciente::with('usuario')->get();
+        return view('historiales_medicos.create', compact('pacientes'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Almacena un nuevo historial médico en la base de datos.
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'paciente_id' => 'required|exists:pacientes,id',
+            'descripcion' => 'required|string|max:1000',
+            'fecha' => 'required|date',
+        ]);
+
+        HistorialMedico::create($request->all());
+
+        return redirect()->route('historiales_medicos.index')->with('success', 'Historial médico creado exitosamente.');
     }
 
     /**
-     * Display the specified resource.
+     * Muestra los detalles de un historial médico.
      */
     public function show(HistorialMedico $historialMedico)
     {
-        return view('historiales-medicos.show', ['id' => $historialMedico]);
+        return view('historiales_medicos.show', compact('historialMedico'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Muestra el formulario para editar un historial médico.
      */
     public function edit(HistorialMedico $historialMedico)
     {
-        return view('historiales-medicos.edit', ['id' => $historialMedico]);
+        $pacientes = Paciente::with('usuario')->get();
+        return view('historiales_medicos.edit', compact('historialMedico', 'pacientes'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualiza un historial médico en la base de datos.
      */
     public function update(Request $request, HistorialMedico $historialMedico)
     {
-        //
+        $request->validate([
+            'paciente_id' => 'required|exists:pacientes,id',
+            'descripcion' => 'required|string|max:1000',
+            'fecha' => 'required|date',
+        ]);
+
+        $historialMedico->update($request->all());
+
+        return redirect()->route('historiales_medicos.index')->with('success', 'Historial médico actualizado exitosamente.');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina un historial médico de la base de datos.
      */
     public function destroy(HistorialMedico $historialMedico)
     {
-        //
+        $historialMedico->delete();
+
+        return redirect()->route('historiales_medicos.index')->with('success', 'Historial médico eliminado exitosamente.');
     }
 }

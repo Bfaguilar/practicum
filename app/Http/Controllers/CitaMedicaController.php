@@ -3,91 +3,87 @@
 namespace App\Http\Controllers;
 
 use App\Models\CitaMedica;
+use App\Models\Paciente;
+use App\Models\Doctor;
 use Illuminate\Http\Request;
 
 class CitaMedicaController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Muestra una lista de citas médicas.
      */
     public function index()
     {
-        //$citas = CitaMedica::all();
-        return redirect()->route('citas_medicas.create');
+        $citas = CitaMedica::with('paciente.usuario', 'doctor.usuario')->get();
+        return view('citas_medicas.index', compact('citas'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Muestra el formulario para crear una nueva cita médica.
      */
     public function create()
     {
-        $pacientes = [
-            (object) ['id' => 1, 'nombre' => 'Juan', 'apellido' => 'Pérez'],
-            (object) ['id' => 2, 'nombre' => 'María', 'apellido' => 'López'],
-        ];
-
-        $doctors = [
-            (object) ['id' => 1, 'nombre' => 'Dr. Carlos', 'apellido' => 'Gómez'],
-            (object) ['id' => 2, 'nombre' => 'Dra. Ana', 'apellido' => 'Martínez'],
-        ];
-
-        return view('citas_medicas.create', compact('pacientes', 'doctors'));
+        $pacientes = Paciente::with('usuario')->get();
+        $doctores = Doctor::with('usuario')->get();
+        return view('citas_medicas.create', compact('pacientes', 'doctores'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Almacena una nueva cita médica en la base de datos.
      */
     public function store(Request $request)
     {
         $request->validate([
+            'paciente_id' => 'required|exists:pacientes,id',
+            'doctor_id' => 'required|exists:doctores,id',
             'fecha' => 'required|date',
-            'hora' => 'required|date',
-            'paciente_id' => 'required|integer',
-            'doctor_id' => 'required|integer',
+            'hora' => 'required|date_format:H:i',
         ]);
 
         CitaMedica::create($request->all());
-        return redirect()->route('citas_medicas.index')->with('success','Citas Medicas se creo satisfactoriamente');
+        return redirect()->route('citas_medicas.index')->with('success', 'Cita médica creada exitosamente.');
     }
 
     /**
-     * Display the specified resource.
+     * Muestra los detalles de una cita médica.
      */
-    public function show(string $id)
+    public function show(CitaMedica $citaMedica)
     {
-        return view('citas_medicas.show', ['id' => $id]);
+        return view('citas_medicas.show', compact('citaMedica'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Muestra el formulario para editar una cita médica.
      */
-    public function edit(string $id)
+    public function edit(CitaMedica $citaMedica)
     {
-        return view('citas_medicas.edit', ['id' => $id]);
+        $pacientes = Paciente::with('usuario')->get();
+        $doctores = Doctor::with('usuario')->get();
+        return view('citas_medicas.edit', compact('citaMedica', 'pacientes', 'doctores'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualiza una cita médica en la base de datos.
      */
-    public function update(Request $request, CitaMedica  $citaMedica)
+    public function update(Request $request, CitaMedica $citaMedica)
     {
         $request->validate([
+            'paciente_id' => 'required|exists:pacientes,id',
+            'doctor_id' => 'required|exists:doctores,id',
             'fecha' => 'required|date',
-            'hora' => 'required',
-            'paciente_id' => 'required|integer',
-            'doctor_id' => 'required|integer',
+            'hora' => 'required|date_format:H:i',
         ]);
 
         $citaMedica->update($request->all());
-        return redirect()->route('citas_medicas.index')->with('success','Citas Medicas actualizada satisfactoriamente');
+        return redirect()->route('citas_medicas.index')->with('success', 'Cita médica actualizada exitosamente.');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina una cita médica de la base de datos.
      */
     public function destroy(CitaMedica $citaMedica)
     {
         $citaMedica->delete();
-        return redirect()->route('citas_medicas.index')->with('success','Citas Medicas eliminada satisfactoriamente');
+        return redirect()->route('citas_medicas.index')->with('success', 'Cita médica eliminada exitosamente.');
     }
 }

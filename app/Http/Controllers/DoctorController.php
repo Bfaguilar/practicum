@@ -3,84 +3,81 @@
 namespace App\Http\Controllers;
 
 use App\Models\Doctor;
+use App\Models\Usuario;
 use Illuminate\Http\Request;
 
 class DoctorController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Muestra una lista de doctores.
      */
     public function index()
     {
-        $doctores = [
-            [
-                'id' => 1,
-                'nombre' => 'Dr. Juan Pérez',
-                'especialidad' => 'Cardiólogo',
-                'contacto' => '123-456-7890',
-            ],
-            [
-                'id' => 2,
-                'nombre' => 'Dra. María López',
-                'especialidad' => 'Pediatra',
-                'contacto' => '098-765-4321',
-            ],
-            [
-                'id' => 3,
-                'nombre' => 'Dr. Carlos Gómez',
-                'especialidad' => 'Dermatólogo',
-                'contacto' => '456-789-0123',
-            ]
-        ];
-
-        return view('doctors.index', compact('doctores'));
+        $doctores = Doctor::with('usuario')->get(); // Carga la relación con Usuario
+        return view('doctores.index', compact('doctores'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Muestra el formulario para crear un nuevo doctor.
      */
     public function create()
     {
-        return view('doctors.create');
+        $usuarios = Usuario::doesntHave('doctor')->get(); // Usuarios sin doctor asociado
+        return view('doctores.create', compact('usuarios'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Almacena un nuevo doctor en la base de datos.
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'usuario_id' => 'required|exists:usuarios,id|unique:doctores,usuario_id',
+            'especialidad' => 'required|string|max:255',
+            'departamento' => 'required|string|max:255',
+        ]);
+
+        Doctor::create($request->all());
+        return redirect()->route('doctores.index')->with('success', 'Doctor creado exitosamente.');
     }
 
     /**
-     * Display the specified resource.
+     * Muestra los detalles de un doctor.
      */
     public function show(Doctor $doctor)
     {
-        return view('doctors.show', ['id' => $doctor]);
+        $doctor->load('usuario', 'recetas'); // Carga relaciones con Usuario y Recetas
+        return view('doctores.show', compact('doctor'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Muestra el formulario para editar un doctor.
      */
     public function edit(Doctor $doctor)
     {
-        return view('doctors.edit', ['id' => $doctor]);
+        return view('doctores.edit', compact('doctor'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualiza un doctor en la base de datos.
      */
     public function update(Request $request, Doctor $doctor)
     {
-        //
+        $request->validate([
+            'especialidad' => 'required|string|max:255',
+            'departamento' => 'required|string|max:255',
+        ]);
+
+        $doctor->update($request->all());
+        return redirect()->route('doctores.index')->with('success', 'Doctor actualizado exitosamente.');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina un doctor de la base de datos.
      */
     public function destroy(Doctor $doctor)
     {
-        //
+        $doctor->delete();
+        return redirect()->route('doctores.index')->with('success', 'Doctor eliminado exitosamente.');
     }
 }

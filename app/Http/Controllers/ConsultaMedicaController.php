@@ -3,84 +3,88 @@
 namespace App\Http\Controllers;
 
 use App\Models\ConsultaMedica;
+use App\Models\CitaMedica;
+use App\Models\Medicina;
 use Illuminate\Http\Request;
 
 class ConsultaMedicaController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Muestra una lista de consultas médicas.
      */
     public function index()
     {
-        $consultas = [
-            [
-                'id' => 1,
-                'cita_medica_id' => 1,
-                'diagnostico' => 'Hipertensión',
-                'medicina_id' => 101,
-            ],
-            [
-                'id' => 2,
-                'cita_medica_id' => 2,
-                'diagnostico' => 'Asma',
-                'medicina_id' => 102,
-            ],
-            [
-                'id' => 3,
-                'cita_medica_id' => 3,
-                'diagnostico' => 'Diabetes',
-                'medicina_id' => 103,
-            ]
-        ];
-
+        $consultas = ConsultaMedica::with('citaMedica', 'medicina')->get();
         return view('consultas_medicas.index', compact('consultas'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Muestra el formulario para crear una nueva consulta médica.
      */
     public function create()
     {
-        return view('consultas_medicas.create');
+        $citas_medicas = CitaMedica::with('paciente.usuario', 'doctor.usuario')->get();
+        $medicinas = Medicina::all();
+        return view('consultas_medicas.create', compact('citas_medicas', 'medicinas'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Almacena una nueva consulta médica en la base de datos.
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'cita_medica_id' => 'required|exists:citas_medicas,id',
+            'medicina_id' => 'required|exists:medicinas,id',
+            'diagnostico' => 'required|string|max:1000',
+        ]);
+
+        ConsultaMedica::create($request->all());
+
+        return redirect()->route('consultas_medicas.index')->with('success', 'Consulta médica creada exitosamente.');
     }
 
     /**
-     * Display the specified resource.
+     * Muestra los detalles de una consulta médica.
      */
-    public function show($id)
+    public function show(ConsultaMedica $consultaMedica)
     {
-        return view('consultas_medicas.show', ['id' => $id]);
+        return view('consultas_medicas.show', compact('consultaMedica'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Muestra el formulario para editar una consulta médica.
      */
-    public function edit($id)
+    public function edit(ConsultaMedica $consultaMedica)
     {
-        return view('consultas_medicas.edit', ['id' => $id]);
+        $citas_medicas = CitaMedica::with('paciente.usuario', 'doctor.usuario')->get();
+        $medicinas = Medicina::all();
+        return view('consultas_medicas.edit', compact('consultaMedica', 'citas_medicas', 'medicinas'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualiza una consulta médica en la base de datos.
      */
     public function update(Request $request, ConsultaMedica $consultaMedica)
     {
-        //
+        $request->validate([
+            'cita_medica_id' => 'required|exists:citas_medicas,id',
+            'medicina_id' => 'required|exists:medicinas,id',
+            'diagnostico' => 'required|string|max:1000',
+        ]);
+
+        $consultaMedica->update($request->all());
+
+        return redirect()->route('consultas_medicas.index')->with('success', 'Consulta médica actualizada exitosamente.');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina una consulta médica de la base de datos.
      */
     public function destroy(ConsultaMedica $consultaMedica)
     {
-        //
+        $consultaMedica->delete();
+
+        return redirect()->route('consultas_medicas.index')->with('success', 'Consulta médica eliminada exitosamente.');
     }
 }

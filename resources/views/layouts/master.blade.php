@@ -34,10 +34,10 @@
                     <a class="nav-link" href="{{ route('administradores.index') }}">Administradores</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('patients.index') }}">Patients</a>
+                        <a class="nav-link" href="{{ route('pacientes.index') }}">Pacientes</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('doctors.index') }}">Doctors</a>
+                        <a class="nav-link" href="{{ route('doctores.index') }}">Doctores</a>
                     </li>
                     <li class="nav-item">
                     <a class="nav-link" href="{{ route('citas_medicas.index') }}">Citas Medicas</a>
@@ -46,7 +46,7 @@
                     <a class="nav-link" href="{{ route('consultas_medicas.index') }}">Consultas Medicas</a>
                     </li>
                     <li class="nav-item">
-                    <a class="nav-link" href="{{ route('historiales-medicos.index') }}">Historiales Medicos</a>
+                    <a class="nav-link" href="{{ route('historiales_medicos.index') }}">Historiales Medicos</a>
                     </li>
                     <li class="nav-item">
                     <a class="nav-link" href="{{ route('recetas.index') }}">Recetas</a>

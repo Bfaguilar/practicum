@@ -8,79 +8,77 @@ use Illuminate\Http\Request;
 class MedicinaController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Muestra una lista de medicinas.
      */
     public function index()
     {
-        $medicinas = [
-            [
-                'id' => 1,
-                'nombre' => 'Paracetamol',
-                'marca' => 'Farmex',
-                'descripcion' => 'Medicamento para el dolor y fiebre.',
-            ],
-            [
-                'id' => 2,
-                'nombre' => 'Ibuprofeno',
-                'marca' => 'Genfar',
-                'descripcion' => 'Antiinflamatorio para aliviar el dolor.',
-            ],
-            [
-                'id' => 3,
-                'nombre' => 'Amoxicilina',
-                'marca' => 'Bayer',
-                'descripcion' => 'Antibiótico para infecciones bacterianas.',
-            ]
-        ];
-
+        $medicinas = Medicina::all();
         return view('medicinas.index', compact('medicinas'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Muestra el formulario para crear una nueva medicina.
      */
     public function create()
     {
-        return view('medicinas.index');
+        return view('medicinas.create');
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Almacena una nueva medicina en la base de datos.
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'marca' => 'required|string|max:255',
+            'descripcion' => 'nullable|string|max:1000',
+        ]);
+
+        Medicina::create($request->all());
+
+        return redirect()->route('medicinas.index')->with('success', 'Medicina creada exitosamente.');
     }
 
     /**
-     * Display the specified resource.
+     * Muestra los detalles de una medicina.
      */
     public function show(Medicina $medicina)
     {
-        return view('nombre_vista.show', ['id' => $medicina]);
+        return view('medicinas.show', compact('medicina'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Muestra el formulario para editar una medicina.
      */
     public function edit(Medicina $medicina)
     {
-        return view('medicinas.edit', ['id' => $medicina]);
+        return view('medicinas.edit', compact('medicina'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualiza una medicina en la base de datos.
      */
     public function update(Request $request, Medicina $medicina)
     {
-        //
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'marca' => 'required|string|max:255',
+            'descripcion' => 'nullable|string|max:1000',
+        ]);
+
+        $medicina->update($request->all());
+
+        return redirect()->route('medicinas.index')->with('success', 'Medicina actualizada exitosamente.');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina una medicina de la base de datos.
      */
     public function destroy(Medicina $medicina)
     {
-        //
+        $medicina->delete();
+
+        return redirect()->route('medicinas.index')->with('success', 'Medicina eliminada exitosamente.');
     }
 }
